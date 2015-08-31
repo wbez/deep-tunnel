@@ -1,56 +1,151 @@
 {% extends '_base.html' %}
 
-{% block header_content %}
-<header>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>{{ COPY.content.project_name|smarty }}</h1>
-                <h2>{{ COPY.content.lorem_ipsum|smarty }}</h2>
-            </div>
-        </div>
-    </div>
-</header>
-{% endblock %}
-
 
 {% block content %}
-<h1>{{ COPY.content.project_name }}</h1>
 
-<div id="story-meta">
-    <p class="byline">by <span>{{ COPY.content.byline }}</span></p>
-    <p class="dateblock">
-        <span class="date">{{ COPY.content.pubdate }}</span>
-        <span class="time"> {{ COPY.content.pubtime }}</span>
-    </p>
-</div>
-
-<a class="comment-button comment-button-bubble comment-drawer-toggle" href="javascript:">
-    <span class="comment-count"></span>
-</a>
-
-<a class="comment-button comment-button-article comment-drawer-toggle" data-toggle="modal" data-backdrop="static" data-target="#share-modal">
-    <span class="comment-count"></span>
-    <span class="comment-label">Share / Discuss</span>
-</a>
-
-<h2 class="knockout-example">Example COPY list</h2>
-<dl>
-    {% for row in COPY.example_list %}
-    <dt>{{ row.term }}</dt><dd>{{ row.definition }}</dd>
-    {% endfor %}
-</dl>
-
-<h2 class="knockout-example">JST example</h2>
-<p id="template-example"></p>
-{% endblock %}
-
-
-{% block wide_content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="knockout-example">{{ COPY.content.footer_title }}</h2>
-        <p>{{ COPY.content.lorem_ipsum }}</p>
+<div class="container-fluid">
+  <div class="col-sm-8 col-sm-offset-2 subhed">
+    <h1>{{COPY.content.project_name}}</h1>
+    {{COPY.content.subhed}}
+    <br>
+    <div class="soundcloud">
+      {{COPY.content.soundcloud}}
     </div>
+    <br>
+    <div class="byline">
+      {{COPY.content.byline}}
+    </div>
+  </div>
+  <div class="clearfix visible-xs-block"></div>
+  <div class="photo-container">
+    {% for photo in COPY.photos %}
+        <div class="frame">
+          <img src="https://s3.amazonaws.com/wbez-dailygraphics/deeptunnel/{{photo.url}}" class="img-responsive" alt="">
+          <div class="main-caption visible-xs">{{photo.caption}} {{photo.credit}}</div>
+        </div>
+    {% endfor %}
+  </div>
 </div>
-{% endblock %}
+
+<!-- Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="previous"><i class="fa fa-chevron-left"></i></div>
+      <div class="next"><i class="fa fa-chevron-right"></i></div>
+        <div class="modal-caption">
+            <div class="caption-text">Caption</div>
+        </div>
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_foot %}
+
+<script>
+$( document ).ready(function() {
+
+  var $container = $('.photo-container');
+  // init
+  $container.isotope({
+    // options
+    itemSelector: '.frame',
+    layoutMode: 'masonry',
+  });
+
+  // $container.preloader({
+  //   loader: 'images/preloader.gif',
+  //   fadeIn: 700,
+  //   delay : 200,
+  //   parentWrap: 'preloader'
+  // });
+
+  $container.imagesLoaded( function() {
+    $container.isotope('layout');
+  });
+
+  var index = 0;
+  var total = $('.frame').length-1
+  
+  var setClick = function(){
+    if ($(window).width() > 768) {
+      $('.frame').click(function(){
+          var image = $(this).children().attr('src');
+          var caption = $(this).find('.main-caption').text();
+          $('.modal-content').css('background-image', 'url(' + image + ')');
+          $('.caption-text').text(caption);
+          $('#photoModal').modal()
+          index = $('.frame').index($(this));
+          console.log(index,total);
+          if (index >= total) {
+            $('.next').hide();
+            $('.previous').show();
+          } else if (index <= 0) {
+            $('.next').show();
+            $('.previous').hide();
+          } else {
+            $('.next').show();
+            $('.previous').show();
+          }
+
+      })
+    } else {
+      $('.frame').unbind();
+    }
+  }
+  setClick();
+
+  $('.next').click(function(){
+    index = index+1
+    console.log(index,total);
+    var frame = $('.frame:eq('+ index +')')
+    var image = frame.children().attr('src');
+    var caption = $(this).find('.main-caption').text();
+    $('.modal-content').css('background-image', 'url(' + image + ')');
+    $('.caption-text').text(caption);
+    $('#photoModal').modal()
+    if (index >= total) {
+      $('.next').hide();
+      $('.previous').show();
+    } else if (index <= 0) {
+      $('.next').show();
+      $('.previous').hide();
+    } else {
+      $('.next').show();
+      $('.previous').show();
+    }
+  })
+
+  $('.previous').click(function(){
+    index = index-1
+    console.log(index,total);
+    var frame = $('.frame:eq('+ index +')')
+    var image = frame.children().attr('src');
+    var caption = $(this).find('.main-caption').text();
+    $('.modal-content').css('background-image', 'url(' + image + ')');
+    $('.caption-text').text(caption);
+    $('#photoModal').modal()
+    if (index >= total) {
+      $('.next').hide();
+      $('.previous').show();
+    } else if (index <= 0) {
+      $('.next').show();
+      $('.previous').hide();
+    } else {
+      $('.next').show();
+      $('.previous').show();
+    }
+  })
+
+  $( window ).resize(function() {
+    setClick();
+  });
+});
+</script>
+
+{% endblock extra_foot %}

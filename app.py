@@ -35,6 +35,18 @@ def index():
 
     return make_response(render_template('index.html', **context))
 
+@app.route('/gallery/')
+def gallery():
+    """
+    Example view demonstrating rendering a simple HTML page.
+    """
+    context = make_context()
+
+    with open('data/featured.json') as f:
+        context['featured'] = json.load(f)
+
+    return make_response(render_template('gallery.html', **context))
+
 @app.route('/comments/')
 def comments():
     """

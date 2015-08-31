@@ -97,7 +97,7 @@ DEBUG = True
 """
 COPY EDITING
 """
-COPY_GOOGLE_DOC_KEY = '0AlXMOHKxzQVRdHZuX1UycXplRlBfLVB0UVNldHJYZmc'
+COPY_GOOGLE_DOC_KEY = '14_VwfbifrdINCRJbO9wrMm_rxn_VDNsoIlPwzK7QQyE'
 COPY_PATH = 'data/copy.xlsx'
 
 """
